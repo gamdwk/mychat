@@ -1,12 +1,8 @@
-from flask import Flask
+from apps.ext import socketio
+from apps import createapp
+from config import Config
 
-app = Flask(__name__)
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
+app = createapp(Config)
 
 if __name__ == '__main__':
-    app.run()
+    socketio.run(app, host='0.0.0.0', port='8000', debug=True)
