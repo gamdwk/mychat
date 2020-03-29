@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Blueprint, render_template
 from apps.ext import db, socketio, api
 
 
@@ -11,8 +11,9 @@ def createapp(config):
 
 
 def register_blueprint(app):
-    from apps.user import user_bp
-    app.register_blueprint(user_bp)
+    from apps.chat import main
+    app.register_blueprint(main)
+    pass
 
 
 def register_ext(app):
@@ -21,4 +22,4 @@ def register_ext(app):
     db.init_app(app)
 
 
-from apps import user
+from apps import chat

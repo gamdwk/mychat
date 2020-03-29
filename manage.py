@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+# 仅用于数据库迁移
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from app import app
