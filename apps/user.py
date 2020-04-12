@@ -55,10 +55,4 @@ class Users(Resource):
         pass
 
 
-class Icon(Resource):
-    def put(self):
-        pass
-
-
 api.add_resource(Users, '/user', endpoint='user')
-api.add_resource(Icon, '/user/icon', endpoint='icon')
