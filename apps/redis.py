@@ -1,17 +1,9 @@
 from redis import StrictRedis
-from flask_restful import marshal, fields
+from flask_restful import marshal, fields , marshal_with
+from werkzeug.datastructures import FileStorage
 
-redisClient = StrictRedis(host='localhost', port=6379, db=1, decode_responses=True, charset='utf-8')
 
-userFields = {
-    'sid': fields.String,
-    'name': fields.String,
-    'country': fields.String,
-    'autograpgh': fields.String,
-    'phone': fields.String,
-    'email': fields.Url,
-    'icon': fields.Url
-}
+redisClient = StrictRedis(host='localhost', port=6379, db=1, decode_responses=True)
 
 
 class User(object):

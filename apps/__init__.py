@@ -23,4 +23,4 @@ def register_ext(app):
     db.create_all(app=app)
 
 
-from apps import chat,common,files,ext,models
+from apps import chat,common,files,ext,models,user

@@ -1,43 +1,55 @@
 from .ext import api
-from flask_restful import reqparse, Resource, marshal_with
+from flask_restful import reqparse, Resource, marshal_with, fields, marshal
 from flask import session
-from .models import User
-from functools import wraps
-from .redis import redisClient
+from collections import OrderedDict
 
 
-@wraps
-def login(f):
-    if 'user' not in session:
-        session['user'] = {}
+UserDataFields = {
+    'name': fields.String,
+    'country': fields.String,
+    'autograpgh': fields.String,
+    'phone': fields.String,
+    'email': fields.String,
+    'icon': fields.String
+}
+
+UserResponseFields = {
+    'status': fields.Integer,
+    'data': fields.Nested(UserDataFields)
+}
 
 
 class Users(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('name', type=str)
-        self.reqparse.add_argument('autograpgh', type=str)
-        self.reqparse.add_argument('email', type=str)
-        self.reqparse.add_argument('phone', type=str)
-        self.reqparse.add_argument('icon', type=str)
+        self.reqparse.add_argument('name', type=str, location='form')
+        self.reqparse.add_argument('autograpgh', type=str, location='form')
+        self.reqparse.add_argument('email', type=str, location='form')
+        self.reqparse.add_argument('phone', type=str, location='form')
+        self.reqparse.add_argument('icon', type=str, location='form')
 
+    @marshal_with(UserResponseFields)
     def get(self):
-        uid = session['uid']
-        u = User.query.get(uid)
-        data = u.get()
+        if 'user' not in session.keys():
+            session['user'] = OrderedDict()
+        user = session['user']
+        return {
+            'status': 0,
+            'data': user
+        }
+
+    @marshal_with(UserResponseFields)
+    def put(self):
+        args = self.reqparse.parse_args()
+        if 'user' not in session.keys():
+            session['user'] = OrderedDict()
+        print(args)
+        data = marshal(data=args, fields=UserDataFields)
+        session['user'].update(data)
         return {
             'status': 0,
             'data': data
         }
-
-    def post(self):
-        pass
-
-    def put(self):
-        args = self.reqparse.parse_args()
-        u = User.query.get(session['uid'])
-        u.set(args)
-        pass
 
     def delete(self):
         pass
