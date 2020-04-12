@@ -14,18 +14,10 @@ def index():
 
 class ChatNamespace(Namespace):
     def on_connect(self):
-        uid = session.get('uid')
-        if uid is None:
-            u = User()
-            db.session.add(u)
-            db.session.commit()
-            session['uid'] = u.id
-            print(u)
+        print("连接")
 
     def on_disconnect(self):
-        u = User.query.get(session['uid'])
-        db.session.delete(u)
-        db.session.commit()
+        print("断开连接")
 
     def on_my_event(self, data):
         emit('my_response')
