@@ -1,8 +1,7 @@
 from .ext import api
 from flask_restful import reqparse, Resource, marshal_with, fields, marshal
-from flask import session
+from flask import session, abort
 from collections import OrderedDict
-
 
 UserDataFields = {
     'name': fields.String,
@@ -10,7 +9,7 @@ UserDataFields = {
     'autograpgh': fields.String,
     'phone': fields.String,
     'email': fields.String,
-    'icon': fields.String
+    'icon': fields.String  # (default='/static/icon/default.jpg')
 }
 
 UserResponseFields = {
@@ -26,12 +25,14 @@ class Users(Resource):
         self.reqparse.add_argument('autograpgh', type=str, location='form')
         self.reqparse.add_argument('email', type=str, location='form')
         self.reqparse.add_argument('phone', type=str, location='form')
-        self.reqparse.add_argument('icon', type=str, location='form')
+        self.reqparse.add_argument('icon', type=str, location='form', default='/static/icon/default.jpg')
 
     @marshal_with(UserResponseFields)
     def get(self):
         if 'user' not in session.keys():
-            session['user'] = OrderedDict()
+            abort(403)
+        if not session['user']['name']:
+            abort(403)
         user = session['user']
         return {
             'status': 0,
@@ -43,7 +44,9 @@ class Users(Resource):
         args = self.reqparse.parse_args()
         if 'user' not in session.keys():
             session['user'] = OrderedDict()
-        print(args)
+        if args['name'] is None:
+            if not session['user']['name']:
+                abort(400)
         data = marshal(data=args, fields=UserDataFields)
         session['user'].update(data)
         return {
