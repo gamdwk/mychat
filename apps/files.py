@@ -56,14 +56,14 @@ class Files(Resource):
         folder = args['folder']
         file = args['file']
         if not file:
-            abort(100)
+            abort(400)
         if not folder:
-            abort(323)
+            abort(400)
         path = os.path.join(current_app.root_path, current_app.static_folder)
         suffix = file.filename.split(".")[-1].lower()
         filename = random_string() + '.'+suffix
         if not check_filename(folder, filename):
-            abort(403)
+            abort(400)
         path = os.path.join(path, folder, filename)
         file.save(path)
         file.close()
