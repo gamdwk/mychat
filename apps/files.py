@@ -6,23 +6,13 @@ from flask import current_app, abort
 import os
 from .common import random_string
 from urllib.parse import urljoin
+from .fields import FileResponseField,FileField
 
 
-class StaticFileUrl(fields.Raw):
-    def format(self, value):
-        if value:
-            return '/static/' + value[0]+'/'+value[1]
-        else:
-            return None
 
 
-FileField ={
-    'url': StaticFileUrl
-}
-FileResponseField = {
-    'status': fields.Integer,
-    'data': fields.Nested(FileField)
-}
+
+
 suffixes = {
     'image': ['jpg', 'jepg', 'gif', "exr"]
 }

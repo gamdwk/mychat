@@ -15,12 +15,11 @@ def register_blueprint(app):
 
 
 def register_ext(app):
-    from apps.ext import db, socketio, api,sess
+    from apps.ext import socketio, api, sess, cors
     api.init_app(app)
     socketio.init_app(app)
-    db.init_app(app)
     sess.init_app(app)
-    db.create_all(app=app)
+    cors.init_app(app)
 
 
-from apps import chat,common,files,ext,models,user
+from apps import chat, common, files, ext, user

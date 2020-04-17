@@ -7,23 +7,12 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
             namespace = '/chat';
-            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+            var socket = socket.io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
             socket.on('connect', function () {
                 socket.emit('my_event', {data: 'I\'m connected!'});
             });
             socket.on('my_response', function (msg) {
                 $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
-            });
-            socket.on('my_user', function (msg) {
-                $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.data).html());
-            });
-            $('form#emit').submit(function (event) {
-                socket.emit('setuser', {data: $('#emit_data').val()});
-                return false;
-            });
-            $('form#getusr').submit(function (event) {
-                socket.emit('getuser');
-                return false;
             });
         });
     </script>
@@ -37,17 +26,14 @@
     <input type="text" name="emit_data" id="emit_data" placeholder="Message">
     <input type="submit" value="Echo">
 </form>
-<form id="getusr" method="GET" action='#'>
-    <input type="submit" value="Echo">
+<form id="form" enctype="multipart/form-data">
+    <input type="file" name="upload" id="upload">
+    <input type="submit" value="submit">
 </form>
-<form id="get" method="GET" action='#'>
-    <input type="submit" value="Echo">
-</form>
-<script> $("#get").click(function () {
-    $.get('http://localhost:5000/user',function (b) {
-    document.body.innerText = b
-})
-})</script>
+<script>$('form#form').submit(function (event) {
+                socket.emit('message',{data: $('#upload').val()});
+                return false;
+            });</script>
 <h2>Receive:</h2>
 <div id="log"></div>
 </body>
