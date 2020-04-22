@@ -19,7 +19,10 @@ class Users(Resource):
 
     @marshal_with(UserResponseFields)
     def get(self):
+        print(session.sid)
         if 'user' not in session.keys():
+            abort(403)
+        if "name" not in session['user'].keys():
             abort(403)
         if not session['user']['name']:
             abort(403)
@@ -31,6 +34,7 @@ class Users(Resource):
 
     @marshal_with(UserResponseFields)
     def put(self):
+        print(session.sid)
         args = self.reqparse.parse_args()
         if 'user' not in session.keys():
             session['user'] = OrderedDict()
@@ -55,10 +59,11 @@ api.add_resource(Users, '/user', endpoint='user')
 
 def update(user, data):
     if data['icon']:
-        old_icon = user['icon']
-        if old_icon != '/static/icon/default.jpg':
-            path = join(current_app.config["File_Folder"], old_icon)
-            remove(path)
+        if "icon" in user:
+            old_icon = user['icon']
+            if old_icon != '/static/icon/default.jpg':
+                path = join(current_app.config["File_Folder"], old_icon)
+                remove(path)
     for key in data.keys():
         if data[key] is None:
             continue

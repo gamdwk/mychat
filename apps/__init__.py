@@ -10,16 +10,16 @@ def createapp(config):
 
 
 def register_blueprint(app):
-    from apps.chat import main
+    from .chat import main
     app.register_blueprint(main)
 
 
 def register_ext(app):
-    from apps.ext import socketio, api, sess, cors
+    from .ext import socketio, api, sess, cors
     api.init_app(app)
     socketio.init_app(app)
     sess.init_app(app)
     cors.init_app(app)
 
 
-from apps import chat, common, files, ext, user
+from . import chat, common, files, ext, user, rediscli, errors, fields

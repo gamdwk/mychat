@@ -1,5 +1,5 @@
 from flask_restful import marshal
-from flask_restful.fields import String, Raw, Integer, Nested
+from flask_restful.fields import String, Raw, Integer, Nested, Arbitrary
 import json
 
 
@@ -13,23 +13,19 @@ class StaticFileUrl(Raw):
 
 class RedisString(Raw):
     def format(self, value):
-        if json.dumps(value):
-            return str(value)
-        else:
-            return json.dumps(value)
+        return json.dumps(value)
 
 
 class StringFromRedis(Raw):
     def format(self, value):
-        if value:
-            return str(value)
-        else:
-            return json.loads(value)
+        return str(value)
+
 
 
 FileField = {
     'url': StaticFileUrl
 }
+
 FileResponseField = {
     'status': Integer,
     'data': Nested(FileField)
@@ -50,20 +46,15 @@ UserResponseFields = {
 }
 
 RoomToRedisFields = {
-    "owner": RedisString,
-    "name": RedisString,
-    "icon": RedisString,
-    "describe": RedisString,
-    "topic": RedisString
+    "rid": String,
+    "owner": String,
+    "name": String,
+    "icon": String,
+    "describe": String,
+    "topic": String
 }
 
-RoomFromRedisFields = {
-    "owner": StringFromRedis,
-    "name": StringFromRedis,
-    "icon": StringFromRedis,
-    "describe": StringFromRedis,
-    "topic": StringFromRedis
-}
+RoomFromRedisFields = RoomToRedisFields
 
 RoomRspField = {
     "status": Integer,
@@ -71,10 +62,25 @@ RoomRspField = {
 }
 
 MessageField = {
-    "message":String
+    "message": String
 }
 
 AnnouncementField = {
     "status": Integer,
     "data": Nested(MessageField)
+}
+
+SendMessageField = {
+    "rid": String,
+    "uid": String,
+    "content": String,
+    "url": String,
+    "type": Integer,
+    "time": Arbitrary
+}
+
+
+SendMessageRespField = {
+    "status": Integer,
+    "data": Nested(SendMessageField)
 }

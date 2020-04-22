@@ -1,16 +1,12 @@
-from apps.ext import api
+from .ext import api
 from flask_restful import Resource, reqparse, marshal_with, marshal, fields
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
-from flask import current_app, abort
+from flask import current_app, abort, session
 import os
 from .common import random_string
 from urllib.parse import urljoin
-from .fields import FileResponseField,FileField
-
-
-
-
+from .fields import FileResponseField, FileField
 
 
 suffixes = {
@@ -25,6 +21,8 @@ def check_filename(folder, filename):
             return True
         return False
     elif folder is 'files':
+        return True
+    elif folder is 'userIcon':
         return True
     return False
 
