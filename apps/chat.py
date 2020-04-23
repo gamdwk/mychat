@@ -3,8 +3,8 @@ from flask_socketio import Namespace, emit, join_room, leave_room, rooms, close_
 from flask import Blueprint, render_template, abort, request, session, current_app
 from os.path import join
 from flask_restful import marshal
-from .rediscli import creat_room, update_room, \
-    get_room_message, check_is_owner, check_room, delete_room, save_message
+from .rediscli import creat_room, update_room, get_message_list,\
+    get_room_information, check_is_owner, check_room, delete_room, save_message
 from .common import random_string
 from .fields import RoomRspField, AnnouncementField, RoomFromRedisFields, SendMessageField
 
@@ -41,13 +41,15 @@ class ChatNamespace(Namespace):
             del data["owner"]
         if check_is_owner(rid=rid, sid=request.sid):
             data["owner"] = request.sid
+            update_room(rid, data)
             resp = {
                 "status": 0,
                 "data": update_room(rid, data)
             }
-            print(resp["data"])
-            print(marshal(resp["data"], RoomFromRedisFields))
-            emit("room_message", marshal(resp, RoomRspField), room=rid)
+            room_data = marshal(resp, RoomRspField)
+            emit('owner_change', room_data)
+            emit("room_message", room_data, room=rid, include_self=False)
+
         else:
             abort(403)
 
@@ -90,5 +92,11 @@ class ChatNamespace(Namespace):
         else:
             abort(403)
 
+    def on_get_message_list(self, data):
+        room = data["room"]
+        if room in rooms():
+            get_message_list(data)
+        else:
+            abort(403)
 
 socketio.on_namespace(ChatNamespace("/chat"))

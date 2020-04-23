@@ -37,7 +37,7 @@ def update_room(rid, data):
     return redisClient.hgetall(rid)
 
 
-def get_room_message(rid):
+def get_room_information(rid):
     return redisClient.hgetall(rid)
 
 
@@ -45,10 +45,8 @@ def check_is_owner(rid, sid):
     rid = "room" + rid
     user = redisClient.hget(rid, "owner")
     if user == sid:
-        print("是主人")
         return True
     else:
-        print("不是主人")
         return False
 
 
