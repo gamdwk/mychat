@@ -2,6 +2,9 @@ from datetime import timedelta
 from apps.rediscli import redisClient
 from redis import StrictRedis
 
+# File_Folder = '/www/wwwroot/mychat/apps'
+File_Folder = 'F:\再战西二\python\第五轮\mychat\\apps'
+
 
 class Config(object):
     DEBUG = True
@@ -21,5 +24,4 @@ class Config(object):
     SESSION_KEY_PREFIX = 'session'  # 保存到session中的值的前缀
 
     # PERMANENT_SESSION_LIFETIME = timedelta(days=7)
-    File_Folder = '/www/wwwroot/mychat/apps'
-    # File_Folder = 'F:\再战西二\python\第五轮\mychat\\apps'
+

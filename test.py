@@ -1,26 +1,25 @@
 from flask_socketio import SocketIOTestClient
-from mychat.app import app
-from mychat.apps.ext import socketio
+from app import app
+from apps.ext import socketio
+from flask import url_for, session
+from werkzeug.test import EnvironBuilder
 
+app.testing = True
+env = EnvironBuilder(base_url="localhost:5000/user")
 flask_test_client = app.test_client(use_cookies=True)
-flask_test_client = app.test_client(use_cookies=True)
+flask_test_client2 = app.test_client(use_cookies=True)
 myclient = SocketIOTestClient(app=app, socketio=socketio,
                               namespace='/chat', flask_test_client=flask_test_client)
 client2 = SocketIOTestClient(app=app, socketio=socketio,
-                              namespace='/chat', flask_test_client=flask_test_client)
+                             namespace='/chat', flask_test_client=flask_test_client2)
+print(myclient.get_received(namespace='/chat'))
+print(client2.get_received(namespace='/chat'))
+print(myclient.sid)
+myclient.emit()
+
+a = input()
+if int(a) is 1:
+    b = myclient.emit("create_room", {"name":"de"}, namespace='/chat', callback = True)
+    print(b)
 print(myclient.get_received(namespace='/chat'))
 
-
-while True:
-    """jpg = join("F:\再战西二\python\第五轮\mychat\\apps\static\icon", "default.jpg")
-    with open(jpg, mode='rb') as f:
-        myclient.emit('create_room', f.read(), binary=True, callback=print())"""
-    myclient.emit('create_room', {'name': 'dcd', 'skwos': 'jiw'}, namespace='/chat')
-    uid = myclient.get_received()["get_uid"]
-    myclient.disconnect()
-    print(myclient.get_received(namespace='/chat',))
-    myclient.connect(namespace='/chat')
-    myclient.emit('create_room', {'name': 'dcd', 'skwos': 'jiw'}, namespace='/chat')
-    break
-
-print(myclient.get_received(namespace='/chat'))

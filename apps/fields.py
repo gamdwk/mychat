@@ -1,5 +1,5 @@
 from flask_restful import marshal
-from flask_restful.fields import String, Raw, Integer, Nested, Arbitrary
+from flask_restful.fields import String, Raw, Integer, Nested, Arbitrary, List
 import json
 
 
@@ -19,7 +19,6 @@ class RedisString(Raw):
 class StringFromRedis(Raw):
     def format(self, value):
         return str(value)
-
 
 
 FileField = {
@@ -62,7 +61,8 @@ RoomRspField = {
 }
 
 MessageField = {
-    "message": String
+    "message": String,
+    "rid": String
 }
 
 AnnouncementField = {
@@ -73,14 +73,25 @@ AnnouncementField = {
 SendMessageField = {
     "rid": String,
     "uid": String,
+    "index": Integer,
     "content": String,
     "url": String,
     "type": Integer,
     "time": Arbitrary
 }
 
-
 SendMessageRespField = {
     "status": Integer,
     "data": Nested(SendMessageField)
+}
+
+
+class MessageList(Raw):
+    def format(self, value):
+        return marshal(value, SendMessageField)
+
+
+MessageListRspField = {
+    "status": Integer,
+    "data": List(MessageList)
 }
