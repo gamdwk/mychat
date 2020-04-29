@@ -13,7 +13,6 @@ from .fields import RoomRspField, AnnouncementField, RoomFromRedisFields, \
 class ChatNamespace(Namespace):
     def on_connect(self):
         if 'uid' not in session.keys():
-            abort(403)
             disconnect()
         else:
             emit('get_uid', {"status": 0, "data": {"uid": session['uid']}})
@@ -53,13 +52,12 @@ class ChatNamespace(Namespace):
             emit('owner_change', room_data)
             emit("room_message", room_data, room=rid, include_self=False)
         else:
-            abort(403)
+            emit("announcement", {"status": 401, "message": "你不是房间的主人"})
 
     def on_join_room(self, data):
         rid = data["rid"]
-        print(rid)
         if check_room(rid) is False:
-            abort(404)
+            emit("room_message", {"status": 404, "message": "房间不存在"})
         if rid in rooms():
             pass
         else:
@@ -82,7 +80,7 @@ class ChatNamespace(Namespace):
     def on_leave_room(self, data):
         rid = data['rid']
         if not check_room(rid):
-            abort(403)
+            emit("announcement", {"status": 401, "message": "你不在房间"})
         if rid in rooms():
             user = get_user(session["uid"])
             out_room(session["uid"], rid)
@@ -96,7 +94,7 @@ class ChatNamespace(Namespace):
             people = get_room_people_num(rid)
             emit("room_people", people, room=rid)
         else:
-            abort(403)
+            emit("announcement", {"status": 401, "message": "你不在房间"})
 
     def on_break_room(self, data):
         rid = data["rid"]
@@ -110,7 +108,7 @@ class ChatNamespace(Namespace):
             close_room(rid)
             delete_room(rid)
         else:
-            abort(403)
+            emit("announcement", {"status": 401, "message": "你不是房间的主人"})
 
     def on_message(self, data):
         room = data["rid"]
@@ -119,7 +117,7 @@ class ChatNamespace(Namespace):
             message = save_message(room, uid, data)
             send(marshal(message, SendMessageField), room=room)
         else:
-            abort(403)
+            emit("announcement", {"status": 401, "message": "你不是在房间"})
 
     def on_get_message_list(self, data):
         room = data["rid"]
@@ -131,13 +129,12 @@ class ChatNamespace(Namespace):
             }
             emit("message_list", res)
         else:
-            abort(403)
+            emit("announcement", {"status": 401, "message": "你不是在房间"})
 
     def on_user_inform(self, data):
         uid = data["uid"]
         if not check_user(uid):
             emit("user_inform", {"status": 0, "data": {"message": "用户已注销", 'uid': uid}})
-            abort(400)
         else:
             data = get_user(uid)
             user = marshal(data, UserDataFields)
