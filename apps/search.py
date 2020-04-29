@@ -27,11 +27,13 @@ class SearchApi(Resource):
             messages = search(ars, args['rid'])
             ms = list()
             for message in messages:
-                message = json.loads(message)
-                uid = message['uid']
+                print(message)
+                m = json.loads(message)
+                print(m)
+                uid = m['uid']
                 name = redisClient.hget('user'+uid, 'name')
-                message['name'] = name
-                del message['uid']
+                m['name'] = name
+                del m['uid']
                 ms.append(message)
             return {
                 "status": 0,
