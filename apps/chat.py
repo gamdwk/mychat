@@ -59,7 +59,7 @@ class ChatNamespace(Namespace):
         rid = data["rid"]
         print(rid)
         if check_room(rid) is False:
-            abort(403)
+            abort(404)
         if rid in rooms():
             pass
         else:
