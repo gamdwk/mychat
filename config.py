@@ -7,8 +7,6 @@ File_Folder = 'F:\再战西二\python\第五轮\mychat\\apps'
 
 
 class Config(object):
-    DEBUG = True
-
     SECRET_KEY = "fcb0813083644071b18f6cb9f24b740c"
     # CSRF_ENABLED = True  # 激活跨站点请求伪造保护
 

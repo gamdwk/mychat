@@ -11,8 +11,6 @@ def createapp(config):
 
 
 def register_blueprint(app):
-    from .user import test
-    app.register_blueprint(test)
     pass
 
 

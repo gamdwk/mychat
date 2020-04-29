@@ -1,7 +1,7 @@
 from .rediscli import redisClient, check_user_in
 from .ext import api
 from flask_restful import Resource, reqparse
-from flask import session, abort
+from flask import session, abort, request
 import re
 import json
 
@@ -9,11 +9,11 @@ import json
 class SearchApi(Resource):
     def __init__(self):
         self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument('args', type=str, location='form')
-        self.reqparse.add_argument('rid', type=str, location='form')
+        self.reqparse.add_argument('args', type=str, location=['values', 'args', 'json', 'form'])
+        self.reqparse.add_argument('rid', type=str, location=['values', 'args', 'json', 'form'])
 
     def get(self):
-        args = self.reqparse.args()
+        args = self.reqparse.parse_args()
         ars = args['args']
         if ars is None:
             abort(400)
@@ -25,6 +25,11 @@ class SearchApi(Resource):
             abort(403)
         else:
             messages = search(ars, args['rid'])
+            for message in messages:
+                uid = message['uid']
+                name = redisClient.hget('user'+uid, 'name')
+                message['name'] = name
+                del message['uid']
             return {
                 "status": 0,
                 "messages": messages
@@ -34,7 +39,7 @@ class SearchApi(Resource):
 def search(args, rid):
     mid = "message" + rid
     messages = redisClient.lrange(mid, 0, -1)
-    args = args.spilt()
+    args = args.split()
 
     def has_args(message):
         message = json.loads(message)
@@ -47,3 +52,6 @@ def search(args, rid):
         return False
 
     return list(filter(has_args, messages))
+
+
+api.add_resource(SearchApi, '/search', endpoint='search')

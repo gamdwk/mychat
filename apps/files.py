@@ -1,8 +1,8 @@
 from .ext import api
-from flask_restful import Resource, reqparse, marshal_with, marshal, fields
+from flask_restful import Resource, reqparse, marshal_with, marshal, fields,abort
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
-from flask import current_app, abort, session
+from flask import current_app, session
 import os
 from .common import random_string
 from urllib.parse import urljoin
@@ -14,7 +14,7 @@ from os import makedirs
 
 folders = ['files', 'icon', 'roomIcon', 'user', 'pic']
 suffixes = {
-    'image': ['jpg', 'jepg', 'gif', "exr"]
+    'image': ['jpg', 'jepg', 'gif', "exr", "png"]
 }
 
 

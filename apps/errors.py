@@ -29,5 +29,12 @@ def not_allow_method_error(error):
 def run_error(error):
     return FlaskOverallError(500, '服务器运行错误').resp()
 
-from .ext import api
+
+from .ext import api, socketio
+
+
+@socketio.on_error('/chat')
+def chat_error(e):
+    print(e)
+
 

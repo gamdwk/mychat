@@ -10,7 +10,6 @@ from os import remove
 from os.path import join
 
 File_Folder = '/www/wwwroot/mychat/apps'
-# File_Folder = "F:\再战西二\python\第五轮\mychat\\apps"
 # pool = ConnectionPool(host='localhost',  port=6379)
 redisClient = StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
 
@@ -119,18 +118,28 @@ def delete_room(rid):
     room = "room" + rid
     icon = redisClient.hget(room, "icon")
     if icon != '/static/roomIcon/default.jpg':
-        remove(join(File_Folder, icon))
+        try:
+            remove(join(File_Folder, icon))
+        except:
+            print(join(File_Folder, icon) + "不存在")
     redisClient.delete(room)
     mid = "message" + rid
     redisClient.delete(mid)
     u = "user_in" + rid
     redisClient.delete(u)
+    folders = ['/static/files/', '/static/pic/']
+    for folder in folders:
+        path = join(File_Folder,  folder+ rid)
+        try:
+            remove(path)
+        except:
+            print(path)
 
 
 def save_message(room, sid, data):
     mid = "message" + room
     data["uid"] = sid
-    time = datetime.utcnow().timestamp()
+    time = datetime.now().timestamp()
     data["time"] = time
     if not redisClient.exists(mid):
         data["index"] = 0
@@ -200,4 +209,3 @@ def init_user(uid):
     redisClient.hset(u, 'icon', '/static/icon/default.jpg')
     return True
 
-pubsub = redisClient.pubsub()
