@@ -4,7 +4,8 @@ from flask import Blueprint, render_template, abort, request, session, current_a
 from os.path import join
 from flask_restful import marshal
 from .rediscli import create_room, update_room, get_message_list, check_user, get_room_people_num, \
-    get_room_information, check_is_owner, check_room, delete_room, save_message, get_user, out_room, in_room
+    get_room_information, check_is_owner, check_room, delete_room, \
+    save_message, get_user, out_room, in_room, check_user_in
 from .common import random_string
 from .fields import RoomRspField, AnnouncementField, RoomFromRedisFields, \
     SendMessageField, UserDataFields, MessageListRspField
@@ -61,24 +62,24 @@ class ChatNamespace(Namespace):
         if not check_room(rid):
             emit("room_message", {"status": 404, "message": "房间不存在"})
             return
-        elif rid in rooms():
+        elif check_user_in(session['uid'], rid):
             pass
         else:
-            join_room(room=rid)
-            in_room(session["uid"], rid)
             user = get_user(session["uid"])
-            d = get_room_information(rid)
-            d["rid"] = rid
-            resp = {"status": 0, "data": d}
             if "name" in user:
                 name = user["name"]
             else:
                 name = "匿名用户"
             resp2 = {"status": 0, "data": {"message": name + "加入群聊", "rid": rid}}
             emit("announcement", marshal(resp2, AnnouncementField), room=rid)
-            people = get_room_people_num(rid)
-            emit("room_people", people, room=rid)
-            emit("room_message", marshal(resp, RoomRspField))
+        join_room(room=rid)
+        in_room(session["uid"], rid)
+        people = get_room_people_num(rid)
+        d = get_room_information(rid)
+        d["rid"] = rid
+        resp = {"status": 0, "data": d}
+        emit("room_people", people, room=rid)
+        emit("room_message", marshal(resp, RoomRspField))
 
     def on_leave_room(self, data):
         rid = data['rid']
