@@ -60,6 +60,7 @@ class ChatNamespace(Namespace):
         rid = data["rid"]
         if not check_room(rid):
             emit("room_message", {"status": 404, "message": "房间不存在"})
+            return
         elif rid in rooms():
             pass
         else:
