@@ -48,7 +48,6 @@ class Users(Resource):
             abort(403)
         data = set_user(session["uid"], args)
         data = marshal(data=data, fields=UserDataFields)
-
         return {
             'status': 0,
             'data': data

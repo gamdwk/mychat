@@ -28,7 +28,7 @@ def set_user(uid, data):
         if redisClient.hexists(name, 'icon'):
             old_icon = redisClient.hget(name, 'icon')
             if old_icon != '/static/icon/default.jpg':
-                path = join(File_Folder, old_icon)
+                path = File_Folder+old_icon
                 try:
                     remove(path)
                 except:
@@ -78,7 +78,7 @@ def update_room(rid, data):
             icon = redisClient.hget(rid, 'icon')
             if icon != '/static/roomIcon/default.jpg':
                 try:
-                    remove(join(File_Folder, icon))
+                    remove(File_Folder+ icon)
                 except:
                     print(icon)
     else:
@@ -127,9 +127,9 @@ def delete_room(rid):
     redisClient.delete(mid)
     u = "user_in" + rid
     redisClient.delete(u)
-    folders = ['/static/files/', '/static/pic/']
+    folders = ['static/files/', 'static/pic/']
     for folder in folders:
-        path = join(File_Folder,  folder+ rid)
+        path = join(File_Folder,  folder + rid)
         try:
             remove(path)
         except:
