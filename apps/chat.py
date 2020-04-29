@@ -146,6 +146,7 @@ class ChatNamespace(Namespace):
     def on_flash_user(self):
         data = get_user(session["uid"])
         data = marshal(data=data, fields=UserDataFields)
+        data['uid'] = session['uid']
         res = {
             'status': 0,
             'data': data
