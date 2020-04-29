@@ -55,10 +55,12 @@ class ChatNamespace(Namespace):
             emit("announcement", {"status": 401, "message": "你不是房间的主人"})
 
     def on_join_room(self, data):
+        if 'rid' not in data:
+            return
         rid = data["rid"]
-        if check_room(rid) is False:
+        if not check_room(rid):
             emit("room_message", {"status": 404, "message": "房间不存在"})
-        if rid in rooms():
+        elif rid in rooms():
             pass
         else:
             join_room(room=rid)
@@ -81,7 +83,7 @@ class ChatNamespace(Namespace):
         rid = data['rid']
         if not check_room(rid):
             emit("announcement", {"status": 401, "message": "你不在房间"})
-        if rid in rooms():
+        elif rid in rooms():
             user = get_user(session["uid"])
             out_room(session["uid"], rid)
             if "name" in user:
