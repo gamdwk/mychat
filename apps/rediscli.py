@@ -188,11 +188,9 @@ def check_user_in(uid, rid):
 
 def in_room(uid, rid):
     u = "user_in" + rid
-    if redisClient.exists(u):
-        redisClient.sadd(u, uid)
-        return True
-    else:
-        return False
+    redisClient.sadd(u, uid)
+    print(uid + '加入房间' + uid)
+    return True
 
 
 def out_room(uid, rid):
